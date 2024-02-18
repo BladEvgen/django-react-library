@@ -1,6 +1,6 @@
 import json
 
-from django.core.paginator import Paginator
+from django.core.paginator import Paginator, EmptyPage
 from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
@@ -24,8 +24,11 @@ def get_books(request: Request) -> Response:
         author = get_object_or_404(models.Author, slug=author_slug)
         queryset = queryset.filter(authors=author)
     selected_page = request.GET.get(key="page", default=1)
-    pages = Paginator(object_list=queryset, per_page=2)
-    page = pages.page(number=selected_page)
+    pages = Paginator(object_list=queryset, per_page=4)
+    try:
+        page = pages.page(number=selected_page)
+    except EmptyPage:
+        page = pages.page(1)
 
     serializer_data = [
         {

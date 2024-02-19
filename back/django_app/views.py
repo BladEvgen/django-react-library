@@ -23,6 +23,9 @@ def get_books(request: Request) -> Response:
     if author_slug:
         author = get_object_or_404(models.Author, slug=author_slug)
         queryset = queryset.filter(authors=author)
+    book_id = request.GET.get("id")
+    if book_id:
+        queryset = queryset.filter(id=book_id)
     selected_page = request.GET.get(key="page", default=1)
     pages = Paginator(object_list=queryset, per_page=4)
     try:
@@ -37,6 +40,9 @@ def get_books(request: Request) -> Response:
             "description": x.description,
             "book_image": (
                 request.build_absolute_uri(x.book_image.url) if x.book_image else None
+            ),
+            "book_file": (
+                request.build_absolute_uri(x.book_file.url) if x.book_file else None
             ),
             "categories": [category.name for category in x.categories.all()],
             "author_name": [author.name for author in x.authors.all()],

@@ -14,7 +14,10 @@ export function Base1({ children }: any) {
 export function Base2({ children }: any) {
   return (
     <main className={"container-fluid text-bg-dark text-white custom-main "}>
+      <navbars.Navbar1 />
+
       <div>{children}</div>
+      <footers.Footer1 />
     </main>
   );
 }

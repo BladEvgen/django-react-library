@@ -52,6 +52,12 @@ class Book(models.Model):
         null=True,
         upload_to=book_directory_path,
     )
+    book_file = models.FileField(
+        validators=[FileExtensionValidator(["pdf", "epub", "mobi", "doc", "docx"])],
+        blank=True,
+        null=True,
+        upload_to=book_directory_path,
+    )
     categories = models.ManyToManyField(Category)
     authors = models.ManyToManyField(Author)
 

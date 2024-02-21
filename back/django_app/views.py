@@ -1,15 +1,30 @@
 import json
 
-from django.core.paginator import Paginator, EmptyPage
+from django.contrib.auth.models import User
+from django.core.paginator import EmptyPage, Paginator
 from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from rest_framework import status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from rest_framework.request import Request
 from rest_framework.response import Response
 
 from django_app import models
+
+
+@api_view(http_method_names=["GET"])
+@permission_classes([AllowAny])  # 1 ур - всем
+def api(request: Request) -> Response:
+    return Response(data={"message": "ok"})
+
+
+@api_view(http_method_names=["GET"])
+@permission_classes([IsAuthenticated])  # 2 ур - всем, кто аутентифицирован
+def api_users(request: Request) -> Response:
+    print(request.user)
+    return Response(data={"message": User.objects.all()[0].username})
 
 
 @api_view(["GET"])

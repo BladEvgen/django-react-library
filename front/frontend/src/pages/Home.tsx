@@ -9,13 +9,13 @@ interface BookResponse {
   total_count: number;
 }
 interface Category {
-  categories_title: string;
-  categories_slug: string;
+  name: string;
+  slug: string;
 }
 
 interface Author {
-  author_name: string;
-  author_slug: string;
+  name: string;
+  slug: string;
 }
 export default function Page() {
   const [isLoading, setIsLoading] = useState(false);
@@ -183,15 +183,11 @@ export default function Page() {
                         <a
                           href="#"
                           className={`list-group-item list-group-item-action ${
-                            category === categoryItem.categories_slug
-                              ? "active"
-                              : ""
+                            category === categoryItem.slug ? "active" : ""
                           }`}
-                          onClick={() =>
-                            setCategory(categoryItem.categories_slug)
-                          }
+                          onClick={() => setCategory(categoryItem.slug)}
                           key={index}>
-                          {categoryItem.categories_title}
+                          {categoryItem.name}
                         </a>
                       ))}
                     </div>
@@ -203,11 +199,11 @@ export default function Page() {
                         <a
                           href="#"
                           className={`list-group-item list-group-item-action ${
-                            author === authorItem.author_slug ? "active" : ""
+                            author === authorItem.slug ? "active" : ""
                           }`}
-                          onClick={() => setAuthor(authorItem.author_slug)}
+                          onClick={() => setAuthor(authorItem.slug)}
                           key={index}>
-                          {authorItem.author_name}
+                          {authorItem.name}
                         </a>
                       ))}
                     </div>

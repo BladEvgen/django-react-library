@@ -23,7 +23,7 @@ def api(request: Request) -> Response:
 
 
 @api_view(http_method_names=["GET"])
-@permission_classes([AllowAny])  # 2 ур - всем, кто аутентифицирован
+@permission_classes([IsAuthenticated])  # 2 ур - всем, кто аутентифицирован
 def api_users(request):
     username = request.headers.get("Username", None)
     password = request.headers.get("Password", None)

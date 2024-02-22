@@ -19,6 +19,3 @@ urlpatterns = [
     path("api/users/", views.api_users, name="books"),
     path("api/", views.api),
 ]
-
-
-# TODO ЗАПРОС ДЛЯ АДМИНА И ЗАПРОС ТОЛЬКО ПОЛЬЗОВАТЕЛЯМ, разные права

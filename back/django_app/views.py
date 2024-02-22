@@ -11,6 +11,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from rest_framework.request import Request
 from rest_framework.response import Response
 from django_app import serializers
+from django.contrib.auth.hashers import check_password
 
 from django_app import models
 
@@ -22,10 +23,25 @@ def api(request: Request) -> Response:
 
 
 @api_view(http_method_names=["GET"])
-@permission_classes([IsAuthenticated])  # 2 ур - всем, кто аутентифицирован
-def api_users(request: Request) -> Response:
-    print(request.user)
-    return Response(data={"message": User.objects.all()[0].username})
+@permission_classes([AllowAny])  # 2 ур - всем, кто аутентифицирован
+def api_users(request):
+    username = request.headers.get("Username", None)
+    password = request.headers.get("Password", None)
+
+    if username and password:
+        user = User.objects.filter(username=username).first()
+        if user and check_password(password, user.password):
+            roles = []
+            if user.is_superuser:
+                roles.append("superuser")
+            if user.is_staff:
+                roles.append("staff")
+            roles.append("user")
+            return Response({"role": roles})
+        else:
+            return Response({"role": ["anonymous"]})
+    else:
+        return Response({"error": "Username and password are required."}, status=400)
 
 
 @api_view(["GET"])

@@ -4,12 +4,15 @@ import React, { useState } from "react";
 
 export default function Page() {
   const [token, setToken] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [userRole, setUserRole] = useState([""]);
 
   async function Login() {
     try {
       const response = await axios.post(`http://localhost:8000/api/token/`, {
-        username: "admin",
-        password: "admin",
+        username,
+        password,
       });
       console.log(response);
 
@@ -17,6 +20,7 @@ export default function Page() {
       setToken(accessToken);
     } catch (error) {
       console.error("error Login: ", error);
+      setUserRole(["anonymous"]);
     }
   }
 
@@ -28,15 +32,18 @@ export default function Page() {
         timeout: 5000,
         timeoutErrorMessage: "timeout error",
         headers: {
-          // @ts-ignore
           Authorization: `Bearer ${token}`,
+          Username: username,
+          Password: password,
         },
         data: {},
       };
       const response = await axios(config);
+      setUserRole(response.data.role);
       console.log("success GetData: ", response);
     } catch (error) {
       console.error("error GetData: ", error);
+      setUserRole(["anonymous"]);
     }
   }
 
@@ -57,12 +64,13 @@ export default function Page() {
 
               <div className="form-floating">
                 <input
-                  type="email"
+                  type="text"
                   className="form-control"
                   id="floatingInput"
-                  placeholder="name@example.com"
+                  placeholder="Input Login"
+                  onChange={(e) => setUsername(e.target.value)}
                 />
-                <label htmlFor="floatingInput">Email address</label>
+                <label htmlFor="floatingInput">Login</label>
               </div>
               <div className="form-floating">
                 <input
@@ -70,6 +78,7 @@ export default function Page() {
                   className="form-control"
                   id="floatingPassword"
                   placeholder="Password"
+                  onChange={(e) => setPassword(e.target.value)}
                 />
                 <label htmlFor="floatingPassword">Password</label>
               </div>
@@ -102,7 +111,12 @@ export default function Page() {
             onClick={GetData}>
             GetData
           </button>
-          <p className="text-warning d-flex justify-content-center">{token}</p>
+          {/* <p className="text-warning d-flex justify-content-center">{token}</p> */}
+          <p className="text-warning d-flex justify-content-center">
+            {userRole.map((role, index) =>
+              index === userRole.length - 1 ? role : `${role}, `
+            )}{" "}
+          </p>
         </div>
       </div>
     </bases.Base2>

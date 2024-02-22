@@ -134,3 +134,4 @@ dist
 
 *.webp
 *.pdf
+*.sqlite3

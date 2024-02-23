@@ -1,5 +1,6 @@
 import json
 
+from django.contrib.auth.hashers import check_password
 from django.contrib.auth.models import User
 from django.core.paginator import EmptyPage, Paginator
 from django.shortcuts import get_object_or_404
@@ -7,13 +8,11 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
-from django_app import serializers
-from django.contrib.auth.hashers import check_password
 
-from django_app import models
+from django_app import models, serializers
 
 
 @api_view(http_method_names=["GET"])

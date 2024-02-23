@@ -1,14 +1,19 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { createRoot } from "react-dom/client";
+import { Provider } from "react-redux";
+import { store } from "./app/store";
 import "./css/bootstrap/bootstrap.css";
 import "./css/fontawesome/css/all.css";
 import "./index.css";
-import axios from "axios";
 import Router from "./components/router";
-import { Interface } from "readline";
 
 function App() {
-  return null;
+  return (
+    <Provider store={store}>
+      {" "}
+      <Router />
+    </Provider>
+  );
 }
-export default App;
-createRoot(document.getElementById("root")!).render(<Router />);
+
+createRoot(document.getElementById("root")!).render(<App />);

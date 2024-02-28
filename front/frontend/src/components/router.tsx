@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "../pages/Home";
 import Login from "../pages/Login";
+import RegisterPage from "../pages/Register";
 import BookDetail from "../pages/bookDetail";
 export default function Router() {
   return (
@@ -8,7 +9,7 @@ export default function Router() {
       <Routes>
         <Route path={""} element={<Home />}></Route>
         <Route path={"login/"} element={<Login />}></Route>
-        <Route path={"signup/"} element={<Login />}></Route>
+        <Route path={"signup/"} element={<RegisterPage />}></Route>
         <Route path="bookDetail/:id" element={<BookDetail />} />
         <Route path={"*"} element={<Home />}></Route>
       </Routes>

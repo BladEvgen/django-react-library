@@ -8,6 +8,7 @@ import {
   fetchCategories,
   fetchAuthors,
 } from "../app/store";
+import * as navbars from "../components/navbars";
 
 export default function Home() {
   const dispatch = useDispatch();
@@ -37,7 +38,9 @@ export default function Home() {
 
   const handleCategoryChange = (selectedCategory: string) => {
     dispatch(setCategory(selectedCategory));
+    dispatch(setAuthor(""));
     localStorage.setItem("category", selectedCategory);
+    localStorage.removeItem("author");
   };
 
   const handleAuthorChange = (selectedAuthor: string) => {
@@ -145,6 +148,7 @@ export default function Home() {
               role="status"></div>
           </div>
         )}
+        <navbars.Navbar1 />
         {!isLoading && !error && (
           <div className={"container"}>
             <div className="row">

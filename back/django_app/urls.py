@@ -15,7 +15,8 @@ urlpatterns = [
     path("api/book/", views.get_books, name="book-list"),
     path("api/categories/", views.get_categories, name="categories-list"),
     path("api/authors/", views.get_authors, name="authors-list"),
-    # Test Link for check JWT token
-    path("api/users/", views.api_users, name="books"),
+    path("api/users/", views.api_users),
     path("api/", views.api),
+    # Links for User pages
+    path("api/user_register/", views.user_register),
 ]

@@ -11,8 +11,9 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
+from django.contrib.auth.hashers import make_password
 
-from django_app import models, serializers
+from django_app import models, serializers, utils
 
 
 @api_view(http_method_names=["GET"])
@@ -41,6 +42,45 @@ def api_users(request):
             return Response({"role": ["anonymous"]})
     else:
         return Response({"error": "Username and password are required."}, status=400)
+
+
+@api_view(http_method_names=["POST"])
+@permission_classes([AllowAny])
+def user_register(request):
+    email = request.data.get("email", None)
+    password = request.data.get("password", None)
+    confirm_password = request.data.get("confirm_password", None)
+
+    if password != confirm_password:
+        return Response(
+            {"error": "Passwords do not match"}, status=status.HTTP_400_BAD_REQUEST
+        )
+
+    if not utils.password_check(password):
+        return Response(
+            {"error": "Password is invalid"}, status=status.HTTP_400_BAD_REQUEST
+        )
+
+    if email and password:
+        username = email.split("@")[0]
+        user, created = User.objects.get_or_create(username=username, email=email)
+        if created:
+            user.set_password(password)
+            user.save()
+            return Response(
+                {"success": "User registered successfully"},
+                status=status.HTTP_201_CREATED,
+            )
+        else:
+            return Response(
+                {"error": "User with this email already exists"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+    else:
+        return Response(
+            {"error": "Email and password are required"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
 
 
 @api_view(["GET"])

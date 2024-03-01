@@ -30,23 +30,21 @@ export function Navbar1() {
                     Home
                   </Link>
                 </li>
-                <li className="nav-item">
-                  <a className="nav-link text-white" href="#">
-                    Link
-                  </a>
-                </li>
               </ul>
-              <form className="d-flex" role="search">
-                <input
-                  className="form-control me-2"
-                  type="search"
-                  placeholder="Search"
-                  aria-label="Search"
-                />
-                <button className="btn btn-outline-success" type="submit">
-                  Search
-                </button>
-              </form>
+              <ul style={{ listStyleType: "none" }}>
+              <li> 
+              <div className="input-group">
+                <Link to="/login" className="btn btn-outline-success">
+                  <i className="fa-solid fa-door-open p-1 m-0"></i>
+                  Войти
+                </Link>
+                <Link to="/signup" className="btn btn-outline-warning">
+                  <i className="fa-solid fa-user-plus p-1 m-0"></i>
+                  Зарегистрироваться
+                </Link>
+              </div>
+              </li>
+              </ul>
             </div>
           </div>
         </nav>

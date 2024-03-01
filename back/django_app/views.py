@@ -17,31 +17,19 @@ from django_app import models, serializers, utils
 
 
 @api_view(http_method_names=["GET"])
-@permission_classes([AllowAny])  # 1 ур - всем
+@permission_classes([AllowAny])
 def api(request: Request) -> Response:
     return Response(data={"message": "ok"})
 
 
 @api_view(http_method_names=["GET"])
-@permission_classes([IsAuthenticated])  # 2 ур - всем, кто аутентифицирован
+@permission_classes([IsAuthenticated])
 def api_users(request):
-    username = request.headers.get("Username", None)
-    password = request.headers.get("Password", None)
-
-    if username and password:
-        user = User.objects.filter(username=username).first()
-        if user and check_password(password, user.password):
-            roles = []
-            if user.is_superuser:
-                roles.append("superuser")
-            if user.is_staff:
-                roles.append("staff")
-            roles.append("user")
-            return Response({"role": roles})
-        else:
-            return Response({"role": ["anonymous"]})
+    user = request.user
+    if user:
+        return Response({"username": user.username, "email": user.email})
     else:
-        return Response({"error": "Username and password are required."}, status=400)
+        return Response({"error": "User not found."}, status=400)
 
 
 @api_view(http_method_names=["POST"])
@@ -53,32 +41,32 @@ def user_register(request):
 
     if password != confirm_password:
         return Response(
-            {"error": "Passwords do not match"}, status=status.HTTP_400_BAD_REQUEST
+            {"error": "Пароли не совпадают"}, status=status.HTTP_400_BAD_REQUEST
         )
 
     if not utils.password_check(password):
         return Response(
-            {"error": "Password is invalid"}, status=status.HTTP_400_BAD_REQUEST
+            {"error": "Пароль недействителен"}, status=status.HTTP_400_BAD_REQUEST
         )
 
     if email and password:
         username = email.split("@")[0]
         user, created = User.objects.get_or_create(username=username, email=email)
         if created:
-            user.set_password(password)
+            user.password = make_password(password)
             user.save()
             return Response(
-                {"success": "User registered successfully"},
+                {"success": "Пользователь успешно зарегистрирован"},
                 status=status.HTTP_201_CREATED,
             )
         else:
             return Response(
-                {"error": "User with this email already exists"},
+                {"error": "Данная почта уже занята"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
     else:
         return Response(
-            {"error": "Email and password are required"},
+            {"error": "Требуются адрес электронной почты и пароль"},
             status=status.HTTP_400_BAD_REQUEST,
         )
 

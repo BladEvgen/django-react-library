@@ -16,8 +16,8 @@ export default function Page() {
       });
 
       const accessToken = response.data.access;
-      document.cookie = `accessToken=${accessToken};max-age=3600`; // Set cookie with access token
-      navigate("/"); // Redirect to home page
+      document.cookie = `accessToken=${accessToken};max-age=3600`;
+      navigate("/");
     } catch (error) {
       console.error("Error during login: ", error);
     }

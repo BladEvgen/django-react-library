@@ -36,9 +36,9 @@ export function Navbar1() {
   return (
     <div className="container">
       <header>
-        <nav className="navbar navbar-expand-lg bg-dark text-white">
+        <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
           <div className="container-fluid">
-            <Link to="/" className="navbar-brand text-white">
+            <Link to="/" className="navbar-brand">
               Navbar
             </Link>
             <button
@@ -56,44 +56,34 @@ export function Navbar1() {
               id="navbarSupportedContent">
               <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                 <li className="nav-item">
-                  <Link
-                    to="/"
-                    className="nav-link active text-white"
-                    aria-current="page">
+                  <Link to="/" className="nav-link active" aria-current="page">
                     Home
                   </Link>
                 </li>
               </ul>
-              <ul style={{ listStyleType: "none" }}>
+              <div className="d-flex">
                 {loggedIn ? (
                   <>
-                    <li>
-                      <span className="text-white me-3">{username}</span>
-                    </li>
-                    <li>
-                      <button
-                        className="btn btn-outline-danger"
-                        onClick={handleLogout}>
-                        Logout
-                      </button>
-                    </li>
+                    <span className="navbar-text text-warning me-3">
+                      {username}
+                    </span>
+                    <button
+                      className="btn btn-outline-danger"
+                      onClick={handleLogout}>
+                      <i className="fas fa-sign-out-alt"></i> Выход
+                    </button>
                   </>
                 ) : (
                   <>
-                    <li>
-                      <Link to="/login" className="btn btn-outline-success">
-                        <i className="fa-solid fa-door-open p-1 m-0"></i> Войти
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/signup" className="btn btn-outline-warning">
-                        <i className="fa-solid fa-user-plus p-1 m-0"></i>{" "}
-                        Зарегистрироваться
-                      </Link>
-                    </li>
+                    <Link to="/login" className="btn btn-outline-success me-2">
+                      <i className="fas fa-sign-in-alt"></i> Войти
+                    </Link>
+                    <Link to="/signup" className="btn btn-outline-warning">
+                      <i className="fas fa-user-plus"></i> Зарегистрироваться
+                    </Link>
                   </>
                 )}
-              </ul>
+              </div>
             </div>
           </div>
         </nav>

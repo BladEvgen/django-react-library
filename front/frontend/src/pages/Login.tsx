@@ -1,49 +1,25 @@
 import * as bases from "../components/bases";
 import axios from "axios";
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Page() {
-  const [token, setToken] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [userRole, setUserRole] = useState([""]);
+  const navigate = useNavigate();
 
-  async function Login() {
+  async function handleLogin() {
     try {
       const response = await axios.post(`http://localhost:8000/api/token/`, {
         username,
         password,
       });
-      console.log(response);
 
       const accessToken = response.data.access;
-      setToken(accessToken);
+      document.cookie = `accessToken=${accessToken};max-age=3600`; // Set cookie with access token
+      navigate("/"); // Redirect to home page
     } catch (error) {
-      console.error("error Login: ", error);
-      setUserRole(["anonymous"]);
-    }
-  }
-
-  async function GetData() {
-    try {
-      const config = {
-        url: `http://localhost:8000/api/users/`,
-        method: "GET",
-        timeout: 5000,
-        timeoutErrorMessage: "timeout error",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          Username: username,
-          Password: password,
-        },
-        data: {},
-      };
-      const response = await axios(config);
-      setUserRole(response.data.role);
-      console.log("success GetData: ", response);
-    } catch (error) {
-      console.error("error GetData: ", error);
-      setUserRole(["anonymous"]);
+      console.error("Error during login: ", error);
     }
   }
 
@@ -95,28 +71,14 @@ export default function Page() {
                 </label>
               </div>
 
-              <p className="mt-5 mb-3 text-body-secondary">© 2017–2023</p>
+              <button
+                className="btn btn-primary w-100 py-2"
+                type="button"
+                onClick={handleLogin}>
+                Sign in
+              </button>
             </form>
           </main>
-          {/* Тестовые кнопки которые помогают просмотреть token  */}
-          <button
-            className="btn btn-primary w-100 py-2"
-            type="submit"
-            onClick={Login}>
-            Sign in
-          </button>
-          <button
-            className="btn btn-danger w-100 py-2"
-            type="submit"
-            onClick={GetData}>
-            GetData
-          </button>
-          {/* <p className="text-warning d-flex justify-content-center">{token}</p> */}
-          <p className="text-warning d-flex justify-content-center">
-            {userRole.map((role, index) =>
-              index === userRole.length - 1 ? role : `${role}, `
-            )}{" "}
-          </p>
         </div>
       </div>
     </bases.Base2>

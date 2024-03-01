@@ -1,5 +1,38 @@
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+
 export function Navbar1() {
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [username, setUsername] = useState("");
+
+  useEffect(() => {
+    checkLoggedIn();
+  }, []);
+
+  const checkLoggedIn = () => {
+    const accessToken = getCookie("accessToken");
+    if (accessToken) {
+      setLoggedIn(true);
+      const username = getCookie("username");
+      if (username) {
+        setUsername(username);
+      }
+    }
+  };
+
+  const getCookie = (name: string) => {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop()?.split(";").shift();
+  };
+
+  const handleLogout = () => {
+    document.cookie = "accessToken=;max-age=0";
+    document.cookie = "username=;max-age=0";
+    setLoggedIn(false);
+    setUsername("");
+  };
+
   return (
     <div className="container">
       <header>
@@ -32,18 +65,34 @@ export function Navbar1() {
                 </li>
               </ul>
               <ul style={{ listStyleType: "none" }}>
-              <li> 
-              <div className="input-group">
-                <Link to="/login" className="btn btn-outline-success">
-                  <i className="fa-solid fa-door-open p-1 m-0"></i>
-                  Войти
-                </Link>
-                <Link to="/signup" className="btn btn-outline-warning">
-                  <i className="fa-solid fa-user-plus p-1 m-0"></i>
-                  Зарегистрироваться
-                </Link>
-              </div>
-              </li>
+                {loggedIn ? (
+                  <>
+                    <li>
+                      <span className="text-white me-3">{username}</span>
+                    </li>
+                    <li>
+                      <button
+                        className="btn btn-outline-danger"
+                        onClick={handleLogout}>
+                        Logout
+                      </button>
+                    </li>
+                  </>
+                ) : (
+                  <>
+                    <li>
+                      <Link to="/login" className="btn btn-outline-success">
+                        <i className="fa-solid fa-door-open p-1 m-0"></i> Войти
+                      </Link>
+                    </li>
+                    <li>
+                      <Link to="/signup" className="btn btn-outline-warning">
+                        <i className="fa-solid fa-user-plus p-1 m-0"></i>{" "}
+                        Зарегистрироваться
+                      </Link>
+                    </li>
+                  </>
+                )}
               </ul>
             </div>
           </div>
@@ -51,8 +100,4 @@ export function Navbar1() {
       </header>
     </div>
   );
-}
-
-export function Navbar2() {
-  return <header></header>;
 }

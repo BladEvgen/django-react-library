@@ -12,7 +12,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 from django.contrib.auth.hashers import make_password
-
+from django.core.cache import cache
 from django_app import models, serializers, utils
 
 
@@ -73,50 +73,63 @@ def user_register(request):
 
 @api_view(["GET"])
 def get_books(request: Request) -> Response:
-    queryset = models.Book.objects.all()
-    category_slug = request.GET.get("category")
-    if category_slug:
-        category = get_object_or_404(models.Category, slug=category_slug)
-        queryset = queryset.filter(categories=category)
-    author_slug = request.GET.get("author")
-    if author_slug:
-        author = get_object_or_404(models.Author, slug=author_slug)
-        queryset = queryset.filter(authors=author)
-    book_id = request.GET.get("id")
-    if book_id:
-        queryset = queryset.filter(id=book_id)
-    selected_page = request.GET.get(key="page", default=1)
-    pages = Paginator(object_list=queryset, per_page=4)
-    try:
-        page = pages.page(number=selected_page)
-    except EmptyPage:
-        page = pages.page(1)
+    cache_key = f'books-{request.GET.get("category")}-{request.GET.get("author")}-{request.GET.get("id")}-{request.GET.get("page", default=1)}'
+    data = cache.get(cache_key)
+    if not data:
+        queryset = models.Book.objects.all()
+        category_slug = request.GET.get("category")
+        if category_slug:
+            category = get_object_or_404(models.Category, slug=category_slug)
+            queryset = queryset.filter(categories=category)
+        author_slug = request.GET.get("author")
+        if author_slug:
+            author = get_object_or_404(models.Author, slug=author_slug)
+            queryset = queryset.filter(authors=author)
+        book_id = request.GET.get("id")
+        if book_id:
+            queryset = queryset.filter(id=book_id)
+        selected_page = request.GET.get(key="page", default=1)
+        pages = Paginator(object_list=queryset, per_page=4)
+        try:
+            page = pages.page(number=selected_page)
+        except EmptyPage:
+            page = pages.page(1)
 
-    serializer = serializers.BookSerializer(
-        page.object_list, many=True, context={"request": request}
-    )
-    total_count = len(queryset)
-    return Response(
-        {
+        serializer = serializers.BookSerializer(
+            page.object_list, many=True, context={"request": request}
+        )
+        total_count = len(queryset)
+        data = {
             "data": serializer.data,
             "total_count": total_count,
             "status": status.HTTP_200_OK,
         }
-    )
+        cache.set(cache_key, data, 60)
+    return Response(data)
 
 
 @api_view(["GET"])
 def get_categories(request: Request) -> Response:
-    categories = models.Category.objects.all()
-    serializer = serializers.CategorySerializer(categories, many=True)
-    return Response({"data": serializer.data, "total_count": len(categories)})
+    cache_key = "categories"
+    data = cache.get(cache_key)
+    if not data:
+        categories = models.Category.objects.all()
+        serializer = serializers.CategorySerializer(categories, many=True)
+        data = {"data": serializer.data, "total_count": len(categories)}
+        cache.set(cache_key, data, 60)
+    return Response(data)
 
 
 @api_view(["GET"])
 def get_authors(request: Request) -> Response:
-    authors = models.Author.objects.all()
-    serializer = serializers.AuthorSerializer(authors, many=True)
-    return Response({"data": serializer.data, "total_count": len(authors)})
+    cache_key = "authors"
+    data = cache.get(cache_key)
+    if not data:
+        authors = models.Author.objects.all()
+        serializer = serializers.AuthorSerializer(authors, many=True)
+        data = {"data": serializer.data, "total_count": len(authors)}
+        cache.set(cache_key, data, 60)
+    return Response(data)
 
 
 @csrf_exempt
